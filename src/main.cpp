@@ -34,8 +34,8 @@ int main()
 
   PID pid_steering, pid_throttle;
   // TODO: Initialize the pid variable.
-  pid_steering.Init(0.134611, 0.000270736, 3.05349);
-  pid_throttle.Init(0.316731, 0.0000, 0.0226185);
+  pid_steering.Init(0.1, 0.0000, 2.5);
+  pid_throttle.Init(0.3, 0.0000, 0.02);
 
   h.onMessage([&pid_steering, &pid_throttle](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -68,23 +68,24 @@ int main()
           steer_value = pid_steering.TotalError();
 
           // Define the target speed to allow car got faster
-          const double targetspeed =40.0;
+          const double target_throttle = 0.75;
 
           // Speed difference
-          double speed_cte = speed - targetspeed;
-          pid_throttle.UpdateError(speed_cte);
-          throttle = pid_throttle.TotalError();
+          // double speed_cte = speed - targetspeed;
+          pid_throttle.UpdateError(fabs(cte));
+          throttle = pid_throttle.TotalError() + target_throttle;
 
           // Define max and min throttle
-          if (throttle > 0.8) {
-            throttle = 0.8;
+          if (throttle > 1.0) {
+            throttle = 1.0;
           }
-          if (throttle <= 0.0) {
-            throttle =0.001;
+          if (throttle <= 0.0 ) {
+            throttle =0.01;
           }
 
           // DEBUG
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
+          std::cout << "cte:" << cte << "throttle:" << throttle << std::endl;
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;

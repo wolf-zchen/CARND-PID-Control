@@ -2,6 +2,21 @@
 Self-Driving Car Engineer Nanodegree Program
 
 ---
+## Final result
+Two PID controllers, one for steering and one for throttle, were built. The final PID gains for steering controller are [0.1 0.0 2.5], and the PID gains for throttle are [0.3 0.0 0.02]. A short video demonstrates the performance.[demo_vedio\final_pid.mp4](demo_vedio\final_pid.mp4)
+
+## Tuning of PID gains
+### Effect of each components
+* The P controller tries to steer the car toward the center line (against the cross-track error). If P gain is too large, the car overshoots the central line very easily and go out of the road very quickly, however, if P gain is too small, then the car can not steer quickly enough to go through the curves.
+* The I controller tries to eliminate a possible bias on the controlled system that could prevent the error to be eliminated. In the case of the simulator, no bias is present, so the final I gain is very small
+* The D controller helps to counteract the proportional trend to overshoot the center line by smoothing the approach to it.
+
+### Tuning of parameters
+The parameters were chosen manually by try and error. I first add the P controller to make the car following the road, but it starts overshooting went off road quickly. Then I added the D controller to try to overcome the overshooting. The I controller only moved the car out of the road, so I remove the I controller by making I gain zero. After the car drove the track without going out of it, I tweak the parameters little by little based on feeling, i.e. tuning P gain based on overshoot, and D gain accordingly to P gain.
+
+I also implemented a PID controller for the throttle, to maximize the car's speed around the track. The throttle PID controller is fed the magnitude of the CTE because if the car went off center no matter left or right we need to decrease throttle a little bit to allow the car to drive slower to go back to center. For this reason the throttle controller doesn't include an I component, which would only grow indefinitely. The target thorttle was set to 0.75 giving about 60 mph, and I set the range to be [0.01 1.0].
+
+
 
 ## Dependencies
 
